@@ -1,0 +1,10 @@
+# slackapps
+endpoint to host endpoints for slack integrations
+
+Setup guide:
+> git clone https://github.com/wprager/slackapps.git
+> sudo pip3 install virtualenv
+> virtualenv venv
+> . ./activate_venv
+> pip3 install -r requirements.txt
+> python3 run.py
