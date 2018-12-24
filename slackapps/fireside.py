@@ -15,6 +15,19 @@ def fireside(request):
 	SPREADSHEET_ID = '1LsMxR7Q1mQ6B2cT8KLaMAO6vjRxyUGJDobL1KntcD1U'
 	COL_RANGE = 'Form Responses 1!A1:C1'
 	
+	# get 'text' param and handle blank/help cases
+	question = str(request.form['text'])
+	if question == '':
+		return 'Please enter a question.'
+	if question == 'help':
+		return 'Usage: /fireside <your question here>\n Example: /fireside What is your name?'
+	
+	# create request body
+	timestamp = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S')
+	properties = {}
+	properties['values'] = []
+	properties['values'].append([timestamp, question])
+	
 	# get oauth credentials and authorize
 	store = file.Storage('token.json')
 	creds = store.get()
@@ -22,13 +35,6 @@ def fireside(request):
 		flow = client.flow_from_clientsecrets('slackapps/util/google_sheets_client_secrets.json', SCOPES)
 		creds = tools.run_flow(flow, store)
 	service = build('sheets', 'v4', http=creds.authorize(Http()))
-	
-	# get 'text' param and create request body
-	question = str(request.form['text'])
-	timestamp = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S')
-	properties = {}
-	properties['values'] = []
-	properties['values'].append([timestamp, question])
 	
 	# make post request to google sheets api
 	result = service.spreadsheets().values().append(spreadsheetId=SPREADSHEET_ID, range=COL_RANGE, valueInputOption='RAW', body=properties).execute()
