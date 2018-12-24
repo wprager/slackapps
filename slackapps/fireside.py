@@ -1,6 +1,7 @@
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
+import datetime
 import requests
 
 def fireside(request):
@@ -12,7 +13,7 @@ def fireside(request):
 	"""
 	SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 	SPREADSHEET_ID = '1LsMxR7Q1mQ6B2cT8KLaMAO6vjRxyUGJDobL1KntcD1U'
-	COL_RANGE = 'Form Responses 1!A1:B1'
+	COL_RANGE = 'Form Responses 1!A1:C1'
 	
 	# get oauth credentials and authorize
 	store = file.Storage('token.json')
@@ -24,9 +25,10 @@ def fireside(request):
 	
 	# get 'text' param and create request body
 	question = str(request.form['text'])
+	timestamp = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S')
 	properties = {}
 	properties['values'] = []
-	properties['values'].append([question])
+	properties['values'].append([timestamp, question])
 	
 	# make post request to google sheets api
 	result = service.spreadsheets().values().append(spreadsheetId=SPREADSHEET_ID, range=COL_RANGE, valueInputOption='RAW', body=properties).execute()
