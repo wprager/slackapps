@@ -1,3 +1,5 @@
 venv
 *.pyc
 .DS_Store
+token.json
+google_sheets_client_secrets.json

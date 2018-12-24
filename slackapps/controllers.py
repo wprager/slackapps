@@ -1,5 +1,5 @@
 from flask import Flask, request
-from slackapps import app
+from slackapps import app, fireside
 
 import requests
 
@@ -7,6 +7,9 @@ import requests
 # ROUTES
 # ---------------------------------------
 @app.route('/')
-def index():
+def route_index():
 	return 'hello world'
 
+@app.route('/fireside', methods=['POST'])
+def route_fireside():
+	return fireside.fireside(request)
