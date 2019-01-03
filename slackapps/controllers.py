@@ -15,6 +15,7 @@ def route_index():
 def route_fireside():
 	data = {
 		'response_type': 'in_channel',
-		'text': fireside.fireside(request)
+		'text': 'Submitting question...'
 	}
+	fireside.fireside(request)
 	return Response(json.dumps(data), status=200, mimetype='application/json')

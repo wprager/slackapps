@@ -39,4 +39,11 @@ def fireside(request):
 	# make post request to google sheets api
 	result = service.spreadsheets().values().append(spreadsheetId=SPREADSHEET_ID, range=COL_RANGE, valueInputOption='RAW', body=properties).execute()
 	
-	return 'Question successfully submitted. See you at the next session!'
+	# get 'response_url' to send delayed response after google api call
+	response_url = str(request.form['response_url'])
+	if response_url:
+		data = {
+			'response_type': 'in_channel',
+			'text': 'Question successfully submitted. See you at the next session!'
+		}
+		requests.post(response_url, json=data)
