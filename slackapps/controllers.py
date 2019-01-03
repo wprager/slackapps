@@ -1,8 +1,8 @@
-from flask import after_this_request, Flask, request, Response
+from flask import request, Response
 from slackapps import app, fireside
 
 import json
-import requests
+import threading
 
 # ---------------------------------------
 # ROUTES
@@ -13,14 +13,15 @@ def route_index():
 
 @app.route('/fireside', methods=['POST'])
 def route_fireside():
+	form_text = str(request.form['text'])
+	form_url = str(request.form['response_url'])
+	
 	data = {
 		'response_type': 'in_channel',
 		'text': 'Submitting question...'
 	}
 	
-	@after_this_request
-	def asdf(response):
-		fireside.fireside(request)
-		return response
+	t = threading.Thread(target=fireside.fireside, args=(form_text, form_url,))
+	t.start()
 	
 	return Response(json.dumps(data), status=200, mimetype='application/json')

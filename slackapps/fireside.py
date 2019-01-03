@@ -1,10 +1,11 @@
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
+
 import datetime
 import requests
 
-def fireside(request):
+def fireside(form_text, form_url):
 	""" Takes a post request and submits a fireside chat question to the google sheet of responses.
 		Args:
 			request (Request): the post request; the 'text' parameter should contain the question being submitted
@@ -16,7 +17,7 @@ def fireside(request):
 	COL_RANGE = 'Form Responses 1!A1:C1'
 	
 	# get 'text' param and handle blank/help cases
-	question = str(request.form['text'])
+	question = form_text
 	if question == '':
 		return 'Please enter a question.'
 	if question == 'help':
@@ -40,7 +41,7 @@ def fireside(request):
 	result = service.spreadsheets().values().append(spreadsheetId=SPREADSHEET_ID, range=COL_RANGE, valueInputOption='RAW', body=properties).execute()
 	
 	# get 'response_url' to send delayed response after google api call
-	response_url = str(request.form['response_url'])
+	response_url = form_url
 	if response_url:
 		data = {
 			'response_type': 'in_channel',
