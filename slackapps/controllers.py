@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import after_this_request, Flask, request, Response
 from slackapps import app, fireside
 
 import json
@@ -17,5 +17,10 @@ def route_fireside():
 		'response_type': 'in_channel',
 		'text': 'Submitting question...'
 	}
-	fireside.fireside(request)
+	
+	@after_this_request
+	def asdf(response):
+		fireside.fireside(request)
+		return response
+	
 	return Response(json.dumps(data), status=200, mimetype='application/json')
