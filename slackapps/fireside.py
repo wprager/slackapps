@@ -6,9 +6,10 @@ import datetime
 import requests
 
 def fireside(form_text, form_url):
-	""" Takes a post request and submits a fireside chat question to the google sheet of responses.
+	""" Takes the text and response_url from the slack POST request, and submits a fireside chat question to the google sheet of responses.
 		Args:
-			request (Request): the post request; the 'text' parameter should contain the question being submitted
+			form_text (str): the question being submitted
+			form_url (str): the slack response_url to later post the delayed responses
 		Returns:
 			str: a message indicating success
 	"""
@@ -16,18 +17,17 @@ def fireside(form_text, form_url):
 	SPREADSHEET_ID = '1LsMxR7Q1mQ6B2cT8KLaMAO6vjRxyUGJDobL1KntcD1U'
 	COL_RANGE = 'Form Responses 1!A1:C1'
 	
-	# get 'text' param and handle blank/help cases
-	question = form_text
-	if question == '':
+	# handle blank/help cases
+	if form_text == '':
 		return 'Please enter a question.'
-	if question == 'help':
+	if form_text == 'help':
 		return 'Usage: /fireside <your question here>\n Example: /fireside What is your name?'
 	
 	# create request body
 	timestamp = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S')
 	properties = {}
 	properties['values'] = []
-	properties['values'].append([timestamp, question])
+	properties['values'].append([timestamp, form_text])
 	
 	# get oauth credentials and authorize
 	store = file.Storage('token.json')
@@ -40,11 +40,10 @@ def fireside(form_text, form_url):
 	# make post request to google sheets api
 	result = service.spreadsheets().values().append(spreadsheetId=SPREADSHEET_ID, range=COL_RANGE, valueInputOption='RAW', body=properties).execute()
 	
-	# get 'response_url' to send delayed response after google api call
-	response_url = form_url
-	if response_url:
+	# send delayed response after google api call
+	if form_url:
 		data = {
 			'response_type': 'in_channel',
 			'text': 'Question successfully submitted. See you at the next session!'
 		}
-		requests.post(response_url, json=data)
+		requests.post(form_url, json=data)
