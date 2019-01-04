@@ -17,12 +17,6 @@ def fireside(form_text, form_url):
 	SPREADSHEET_ID = '1LsMxR7Q1mQ6B2cT8KLaMAO6vjRxyUGJDobL1KntcD1U'
 	COL_RANGE = 'Form Responses 1!A1:C1'
 	
-	# handle blank/help cases
-	if form_text == '':
-		return 'Please enter a question.'
-	if form_text == 'help':
-		return 'Usage: /fireside <your question here>\n Example: /fireside What is your name?'
-	
 	# create request body
 	timestamp = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S')
 	properties = {}
